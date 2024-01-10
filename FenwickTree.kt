@@ -3,35 +3,20 @@ class FenwickTree(values: List<Int>) {
 
     init {
         tree.forEachIndexed { index, value ->
-            val nextParent = index.nextParent()
-            if (nextParent < tree.size) {
-                tree[nextParent] += value
-            }
+            parent(index)?.let { tree[it] += value }
         }
     }
 
-    fun query(index: Int): Int {
+    operator fun get(index: Int): Int {
         check(index in tree.indices)
-        var sum = 0
-        var p = index
-        while (p >= 0) {
-            sum += tree[p]
-            p = p.parent()
-        }
-        return sum
+        return generateSequence(index, ::lastTree).sumOf(tree::get)
     }
 
     fun update(index: Int, value: Int) {
         check(index in tree.indices)
-        var np = index
-        while (np < tree.size) {
-            tree[np] += value
-            np = np.nextParent()
-        }
+        generateSequence(index, ::parent).forEach { tree[it] += value }
     }
 
-    private companion object {
-        fun Int.parent() = this - (this + 1).takeLowestOneBit()
-        fun Int.nextParent() = this + (this + 1).takeLowestOneBit()
-    }
+    private fun lastTree(i: Int) = (i - (i + 1).takeLowestOneBit()).takeIf { it >= 0 }
+    private fun parent(i: Int) = (i + (i + 1).takeLowestOneBit()).takeIf { it < tree.size }
 }
