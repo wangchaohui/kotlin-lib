@@ -9,7 +9,7 @@ class BinaryHeap<T : BinaryHeap.Item>(private val comparator: Comparator<T>) {
     fun add(item: T) {
         item.pos = a.size
         a.add(item)
-        pop(item.pos)
+        popUp(item.pos)
     }
 
     fun peek(): T? = a.firstOrNull()
@@ -21,11 +21,11 @@ class BinaryHeap<T : BinaryHeap.Item>(private val comparator: Comparator<T>) {
             a[0] = last.apply { pos = 0 }
             heapify(0)
         }
-        return top
+        return top?.apply { pos = -1 }
     }
 
     fun modify(item: T) {
-        heapify(pop(item.pos))
+        if (item.pos in a.indices) heapify(popUp(item.pos))
     }
 
     private fun exchange(i: Int, j: Int) {
@@ -34,7 +34,7 @@ class BinaryHeap<T : BinaryHeap.Item>(private val comparator: Comparator<T>) {
         a[j] = ai.apply { pos = j }
     }
 
-    private fun pop(index: Int): Int {
+    private fun popUp(index: Int): Int {
         var i = index
         while (i > 0) {
             val pi = (i - 1) / 2
