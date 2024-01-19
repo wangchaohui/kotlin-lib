@@ -28,6 +28,8 @@ class BinaryHeap<T : BinaryHeap.Item>(private val comparator: Comparator<T>) {
         if (item.pos in a.indices) heapify(popUp(item.pos))
     }
 
+    val size get() = a.size
+
     private fun exchange(i: Int, j: Int) {
         val ai = a[i]
         a[i] = a[j].apply { pos = i }
