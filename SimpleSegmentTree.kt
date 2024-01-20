@@ -26,7 +26,7 @@ class SimpleSegmentTree(private val values: LongArray) {
         }
     }
 
-    private fun treeSize() = 1.shl((values.size - 1).takeHighestOneBit().countTrailingZeroBits() + 2) - 1
+    private fun treeSize() = (values.size - 1).takeHighestOneBit() * 4 - 1
     private val tree = Array(treeSize()) { Interval() }
 
     init {
