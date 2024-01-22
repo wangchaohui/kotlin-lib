@@ -1,5 +1,4 @@
-
-class SimpleSegmentTree(private val values: LongArray) {
+class SimpleSegmentTree(private val n: Int) {
     data class Interval(
         val sum: Long = 0,
         val maxPrefixSum: Long = sum,
@@ -7,13 +6,13 @@ class SimpleSegmentTree(private val values: LongArray) {
         val maxSubArraySum: Long = sum,
     ) {
         companion object {
-            fun mergeNullable(l: Interval?, r: Interval?): Interval? = when {
+            fun combineNullable(l: Interval?, r: Interval?): Interval? = when {
                 l == null -> r
                 r == null -> l
-                else -> merge(l, r)
+                else -> combine(l, r)
             }
 
-            fun merge(l: Interval, r: Interval) = Interval(
+            fun combine(l: Interval, r: Interval) = Interval(
                 sum = l.sum + r.sum,
                 maxPrefixSum = max(l.maxPrefixSum, l.sum + r.maxPrefixSum),
                 maxSuffixSum = max(r.maxSuffixSum, l.maxSuffixSum + r.sum),
@@ -26,50 +25,28 @@ class SimpleSegmentTree(private val values: LongArray) {
         }
     }
 
-    private fun treeSize() = (values.size * 2 - 1).takeHighestOneBit() * 2 - 1
-    private val tree = Array(treeSize()) { Interval() }
+    private val t = Array(n * 2) { Interval() }
 
-    init {
-        fun buildDfs(index: Int, l: Int, r: Int): Interval =
-            if (l == r) {
-                Interval(values[l])
-            } else {
-                val m = (l + r) / 2
-                Interval.merge(
-                    buildDfs(index * 2 + 1, l, m),
-                    buildDfs(index * 2 + 2, m + 1, r),
-                )
-            }.also { tree[index] = it }
-        buildDfs(0, 0, values.lastIndex)
-    }
-
-    fun query(ql: Int, qr: Int): Interval? {
-        fun queryDfs(index: Int, l: Int, r: Int): Interval? = when {
-            l > qr || r < ql -> null
-            l >= ql && r <= qr -> tree[index]
-            else -> {
-                val m = (l + r) / 2
-                Interval.mergeNullable(
-                    queryDfs(index * 2 + 1, l, m),
-                    queryDfs(index * 2 + 2, m + 1, r),
-                )
-            }
+    fun query(l: Int, r: Int): Interval? {
+        var resL: Interval? = null
+        var resR: Interval? = null
+        var i = l + n
+        var j = r + n
+        while (i < j) {
+            if (i and 1 > 0) resL = Interval.combineNullable(resL, t[i++])
+            if (j and 1 > 0) resR = Interval.combineNullable(t[--j], resR)
+            i /= 2
+            j /= 2
         }
-        return queryDfs(0, 0, values.lastIndex)
+        return Interval.combineNullable(resL, resR)
     }
 
-    fun update(x: Int, delta: Int) {
-        fun updateDfs(index: Int, l: Int, r: Int): Interval = when {
-            x !in l..r -> tree[index]
-            l == r -> Interval(tree[index].sum + delta)
-            else -> {
-                val m = (l + r) / 2
-                Interval.merge(
-                    updateDfs(index * 2 + 1, l, m),
-                    updateDfs(index * 2 + 2, m + 1, r),
-                )
-            }
-        }.also { tree[index] = it }
-        updateDfs(0, 0, values.lastIndex)
+    fun update(p: Int, delta: Int) {
+        var i = p + n
+        t[i] = Interval(t[i].sum + delta)
+        while (i > 1) {
+            i /= 2
+            t[i] = Interval.combine(t[i * 2], t[i * 2 + 1])
+        }
     }
 }
