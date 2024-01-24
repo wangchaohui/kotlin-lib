@@ -1,5 +1,5 @@
 class SplitMergeTreap {
-    data class Node(
+    private data class Node(
         val value: Int,
         var l: Node? = null,
         var r: Node? = null,
@@ -26,6 +26,17 @@ class SplitMergeTreap {
         root = merge(merge(ll, lr), r)
     }
 
+    fun del(value: Int) {
+        val (l, r) = root.split(value)
+        var (ll, lr) = l.split(value - 1)
+        if (lr != null && lr.count > 1) {
+            lr.count--
+            lr.updateSize()
+            ll = merge(ll, lr)
+        }
+        root = merge(ll, r)
+    }
+
     val size: Int
         get() = root.size
 
@@ -34,7 +45,27 @@ class SplitMergeTreap {
         return l.size.also { root = merge(l, r) }
     }
 
-    companion object {
+    operator fun get(rank: Int): Int {
+        val (v, node) = root!!.getByRank(rank)
+        root = node
+        return v
+    }
+
+    fun previous(value: Int): Int {
+        val (l, r) = root.split(value - 1)
+        val (p, node) = l!!.getByRank(l.size - 1)
+        root = merge(node, r)
+        return p
+    }
+
+    fun next(value: Int): Int {
+        val (l, r) = root.split(value)
+        val (p, node) = r!!.getByRank(0)
+        root = merge(l, node)
+        return p
+    }
+
+    private companion object {
         val Node?.size: Int
             get() = this?.size ?: 0
 
@@ -55,6 +86,28 @@ class SplitMergeTreap {
             }
         }
 
+        fun Node?.splitByRank(rank: Int): Triple<Node?, Node?, Node?> = when {
+            this == null -> Triple(null, null, null)
+            rank < l.size -> {
+                val (ll, lm, lr) = l.splitByRank(rank)
+                l = lr
+                updateSize()
+                Triple(ll, lm, this)
+            }
+
+            rank < l.size + count -> Triple(l, this, r).also {
+                l = null
+                r = null
+            }
+
+            else -> {
+                val (rl, rm, rr) = r.splitByRank(rank - l.size - count)
+                r = rl
+                updateSize()
+                Triple(this, rm, rr)
+            }
+        }
+
         fun merge(u: Node?, v: Node?): Node? = when {
             u == null -> v
             v == null -> u
@@ -67,6 +120,11 @@ class SplitMergeTreap {
                 l = merge(u, l)
                 updateSize()
             }
+        }
+
+        fun Node.getByRank(rank: Int): Pair<Int, Node> {
+            val (l, m, r) = splitByRank(rank)
+            return m!!.value to merge(merge(l, m), r)!!
         }
     }
 }
