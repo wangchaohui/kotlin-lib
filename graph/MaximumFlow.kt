@@ -12,9 +12,10 @@ class MaximumFlow(vertexSize: Int, private val s: Int, private val t: Int) {
     private val edges = Array(vertexSize) { mutableListOf<Edge>() }
     private val currentEdges = IntArray(vertexSize)
 
-    fun addEdge(u: Int, v: Int, c: Int) {
-        val edge = Edge(u, v, c).also { edges[u] += it }
-        edge.reverse = Edge(v, u, c).apply { reverse = edge }.also { edges[v] += it }
+    fun addEdge(u: Int, v: Int, capacity: Int, reversedCapacity: Int = 0): Edge {
+        val edge = Edge(u, v, capacity).also { edges[u] += it }
+        edge.reverse = Edge(v, u, reversedCapacity).apply { reverse = edge }.also { edges[v] += it }
+        return edge
     }
 
     fun dinic(): Long {
