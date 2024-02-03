@@ -27,7 +27,7 @@ class SimpleSegmentTree(private val n: Int) {
 
     private val t = Array(n * 2) { Interval() }
 
-    onstructor(values: List<Long>) : this(values.size) {
+    constructor(values: List<Long>) : this(values.size) {
         values.forEachIndexed { i, v -> t[i + n] = Interval(v) }
         for (i in n - 1 downTo 1) t[i] = Interval.combine(t[i * 2], t[i * 2 + 1])
     }
