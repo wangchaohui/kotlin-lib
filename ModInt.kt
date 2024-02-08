@@ -1,20 +1,16 @@
-class ModInt(v: Int) {
-    constructor(v: Long) : this(v.mod(MOD))
-
-    private val value = v.mod(MOD)
-
+@JvmInline
+value class ModInt private constructor(val value: Int) {
     operator fun plus(other: ModInt) = plus(other.value)
-    operator fun plus(other: Int) = ModInt(value + other)
+    operator fun plus(other: Int) = from(value + other)
     operator fun minus(other: ModInt) = minus(other.value)
-    operator fun minus(other: Int) = ModInt(value - other)
+    operator fun minus(other: Int) = from(value - other)
     operator fun times(other: ModInt) = times(other.value)
-    operator fun times(other: Int) = ModInt(value.toLong() * other)
-    override fun toString() = value.toString()
+    operator fun times(other: Int) = from(value.toLong() * other)
 
-    fun pow(pow: Int): ModInt {
+    fun pow(exponent: Int): ModInt {
+        var ans = One
         var a = this
-        var b = pow
-        var ans = ModInt(1)
+        var b = exponent
         while (b > 0) {
             if (b % 2 == 1) ans *= a
             a *= a
@@ -23,13 +19,23 @@ class ModInt(v: Int) {
         return ans
     }
 
-    private companion object {
+    fun inv(): ModInt = pow(MOD - 2)
+
+    override fun toString() = value.toString()
+
+    companion object {
+        fun from(value: Int) = ModInt(value.mod())
+        fun from(value: Long) = ModInt(value.mod())
+        fun Int.mod() = mod(MOD)
+        fun Long.mod() = mod(MOD)
+        val Zero = from(0)
+        val One = from(1)
         const val MOD = 998244353
     }
 }
 
 fun Array<ModInt>.sum(): ModInt {
-    var sum = ModInt(0)
+    var sum = ModInt.Zero
     for (element in this) sum += element
     return sum
 }
