@@ -11,7 +11,6 @@ class SparseTable<T>(list: List<T>, private val merge: (T, T) -> T) {
     }
 
     private val logs = IntArray(n).apply {
-        this[1] = 0
         for (i in 2..<size) this[i] = this[i / 2] + 1
     }
 
