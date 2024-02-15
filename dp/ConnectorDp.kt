@@ -1,6 +1,6 @@
 class ConnectorDp(private val matrix: Array<BooleanArray>) {
     @JvmInline
-    private value class State(val value: Long) {
+    private value class State(val value: Int) {
 
         operator fun get(index: Int): Int = (value / BasePower[index]).mod(BASE)
 
@@ -13,7 +13,7 @@ class ConnectorDp(private val matrix: Array<BooleanArray>) {
         private companion object {
             const val SIZE = 12
             const val BASE = 3
-            val BasePower = LongArray(SIZE + 1).apply {
+            val BasePower = IntArray(SIZE + 1).apply {
                 this[0] = 1
                 for (i in 1..SIZE) {
                     this[i] = this[i - 1] * BASE
@@ -65,7 +65,7 @@ class ConnectorDp(private val matrix: Array<BooleanArray>) {
                             now.increase(key.set(j, 0).set(j + 1, 0).set(k, c0), value)
                         }
 
-                        key.set(j, 0).set(j + 1, 0).value == 0L -> {
+                        key.set(j, 0).set(j + 1, 0).value == 0 -> {
                             nowAns += value
                         }
                     } else if (c0 == 0 && c1 == 0) now.increase(key, value)
@@ -73,7 +73,6 @@ class ConnectorDp(private val matrix: Array<BooleanArray>) {
                 if (matrix[i][j]) {
                     ans = nowAns
                 }
-//                println("$i $j $now")
                 previous = now
             }
         }
