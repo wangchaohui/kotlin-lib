@@ -10,8 +10,6 @@ class AhoCorasickAutomaton(private val dictionary: List<String>) {
 
         fun build(c: Char) = this[c] ?: TrieNode(this to c).also { children[c - 'a'] = it }
 
-        operator fun contains(c: Char): Boolean = this[c] != null
-
         override fun toString() = parentLink?.let { (parent, c) -> "$parent$c" } ?: ""
     }
 
