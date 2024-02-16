@@ -1,4 +1,4 @@
-data class Tree(val maxVertexId: Int) {
+class Tree(maxVertexId: Int) {
     private val adjacencyList = Array(maxVertexId + 1) { mutableListOf<Int>() }
 
     fun addEdge(parent: Int, child: Int) {
