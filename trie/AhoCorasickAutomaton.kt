@@ -1,19 +1,21 @@
 class AhoCorasickAutomaton(private val dictionary: List<String>) {
 
-    private class TrieNode(val parentLink: Pair<TrieNode, Char>?) {
+    private class TrieNode {
         val wordIds = mutableListOf<Int>()
         val children: Array<TrieNode?> = Array(26) { null }
         var suffixNode: TrieNode? = null
-        var dictionarySuffixNode: TrieNode? = null
-
+            set(value) {
+                field = checkNotNull(value)
+                dictionarySuffixNode =
+                    if (value.wordIds.isEmpty()) value.dictionarySuffixNode else value
+            }
+        private var dictionarySuffixNode: TrieNode? = null
+        fun matchIds() = generateSequence(this) { it.dictionarySuffixNode }.flatMap { it.wordIds }
         operator fun get(c: Char) = children[c - 'a']
-
-        fun build(c: Char) = this[c] ?: TrieNode(this to c).also { children[c - 'a'] = it }
-
-        override fun toString() = parentLink?.let { (parent, c) -> "$parent$c" } ?: ""
+        fun build(c: Char) = this[c] ?: TrieNode().also { children[c - 'a'] = it }
     }
 
-    private val trie = TrieNode(null)
+    private val trie = TrieNode()
 
     init {
         dictionary.forEachIndexed(::addWord)
@@ -30,13 +32,9 @@ class AhoCorasickAutomaton(private val dictionary: List<String>) {
         val queue = ArrayDeque(listOf(trie))
         while (queue.isNotEmpty()) {
             val node = queue.removeFirst()
-            node.suffixNode = node.parentLink?.let { (parent, c) ->
-                parent.suffixNode?.get(c) ?: trie
-            }
-            node.dictionarySuffixNode = generateSequence(node.suffixNode) { it.suffixNode }
-                .firstOrNull { it.wordIds.isNotEmpty() }
             for ((i, child) in node.children.withIndex()) {
                 if (child != null) {
+                    child.suffixNode = node.suffixNode?.let { it.children[i] } ?: trie
                     queue += child
                 } else {
                     node.suffixNode?.let { node.children[i] = it.children[i] }
@@ -50,9 +48,7 @@ class AhoCorasickAutomaton(private val dictionary: List<String>) {
         var node = trie
         for (c in s) {
             node = node[c] ?: trie
-            for (id in generateSequence(node) { it.dictionarySuffixNode }.flatMap { it.wordIds }) {
-                ans[id]++
-            }
+            for (id in node.matchIds()) ans[id]++
         }
         return ans
     }
