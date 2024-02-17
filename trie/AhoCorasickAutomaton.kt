@@ -3,16 +3,20 @@ class AhoCorasickAutomaton(private val dictionary: List<String>) {
     private class TrieNode {
         val wordIds = mutableListOf<Int>()
         val children: Array<TrieNode?> = Array(26) { null }
+        private var dictionarySuffixNode = this
         var suffixNode: TrieNode? = null
             set(value) {
                 field = checkNotNull(value)
                 dictionarySuffixNode =
                     if (value.wordIds.isEmpty()) value.dictionarySuffixNode else value
+                dictionarySuffixNode.dictionaryChildren += this
             }
-        private var dictionarySuffixNode: TrieNode? = null
-        fun matchIds() = generateSequence(this) { it.dictionarySuffixNode }.flatMap { it.wordIds }
+        val dictionaryChildren = mutableListOf<TrieNode>()
+
         operator fun get(c: Char) = children[c - 'a']
         fun build(c: Char) = this[c] ?: TrieNode().also { children[c - 'a'] = it }
+        fun suffixAddChar(i: Int) = suffixNode?.let { it.children[i] }
+        var matchCount = 0
     }
 
     private val trie = TrieNode()
@@ -34,22 +38,32 @@ class AhoCorasickAutomaton(private val dictionary: List<String>) {
             val node = queue.removeFirst()
             for ((i, child) in node.children.withIndex()) {
                 if (child != null) {
-                    child.suffixNode = node.suffixNode?.let { it.children[i] } ?: trie
+                    child.suffixNode = node.suffixAddChar(i) ?: trie
                     queue += child
                 } else {
-                    node.suffixNode?.let { node.children[i] = it.children[i] }
+                    node.children[i] = node.suffixAddChar(i)
                 }
             }
         }
     }
 
     fun query(s: String): IntArray {
-        val ans = IntArray(dictionary.size)
         var node = trie
         for (c in s) {
             node = node[c] ?: trie
-            for (id in node.matchIds()) ans[id]++
+            node.matchCount++
         }
+        return collectMatchCount()
+    }
+
+    private fun collectMatchCount(): IntArray {
+        val ans = IntArray(dictionary.size)
+        fun TrieNode.dfs(): Int {
+            for (child in dictionaryChildren) matchCount += child.dfs()
+            for (wordId in wordIds) ans[wordId] += matchCount
+            return matchCount.also { matchCount = 0 }
+        }
+        trie.dfs()
         return ans
     }
 }
