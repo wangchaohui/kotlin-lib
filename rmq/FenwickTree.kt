@@ -1,4 +1,6 @@
-class FenwickTree(values: List<Int>) {
+typealias NumberType = Long
+
+class FenwickTree(values: List<NumberType>) {
     private val tree = values.toMutableList()
 
     init {
@@ -7,12 +9,13 @@ class FenwickTree(values: List<Int>) {
         }
     }
 
-    operator fun get(index: Int): Int {
+    /** Gets the sum of `[0, index]`. */
+    operator fun get(index: Int): NumberType {
         check(index in tree.indices)
         return generateSequence(index, ::lastTree).sumOf(tree::get)
     }
 
-    fun update(index: Int, value: Int) {
+    fun add(index: Int, value: NumberType) {
         check(index in tree.indices)
         generateSequence(index, ::parent).forEach { tree[it] += value }
     }
