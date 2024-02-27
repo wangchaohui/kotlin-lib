@@ -3,8 +3,8 @@ class SegmentTree<T, M>(
     private val identity: T,
     private val combine: (T, T) -> T,
     private val identityModification: M,
-    private val modify: M.(T) -> T,
     private val combineModification: (M, M) -> M,
+    private val modify: M.(T) -> T,
 ) {
     private val h = 32 - Integer.numberOfLeadingZeros(n)
     private val tree = MutableList(2 * n) { identity }
@@ -15,9 +15,9 @@ class SegmentTree<T, M>(
         identity: T,
         combine: (T, T) -> T,
         identityModification: M,
-        modify: M.(T) -> T,
         combineModification: (M, M) -> M,
-    ) : this(values.size, identity, combine, identityModification, modify, combineModification) {
+        modify: M.(T) -> T,
+    ) : this(values.size, identity, combine, identityModification, combineModification, modify) {
         values.forEachIndexed { i, v -> tree[i + n] = v }
         for (i in n - 1 downTo 1) tree[i] = combine(tree[i * 2], tree[i * 2 + 1])
     }
