@@ -38,9 +38,11 @@ class SegmentTree<T, M>(
     private fun push(p: Int) {
         for (s in h downTo 1) {
             val i = p shr s
-            tree[i * 2] = lazy[i].modify(tree[i * 2])
-            tree[i * 2 + 1] = lazy[i].modify(tree[i * 2 + 1])
-            lazy[i] = identityModification
+            if(lazy[i] != identityModification) {
+                apply(i * 2, lazy[i])
+                apply(i * 2 + 1, lazy[i])
+                lazy[i] = identityModification
+            }
         }
     }
 
