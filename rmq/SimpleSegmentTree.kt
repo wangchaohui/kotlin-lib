@@ -36,4 +36,17 @@ class SimpleSegmentTree<T>(
     }
 }
 
-val tree = SimpleSegmentTree(n = 500000, identity = 0, combine = ::max)
+val maxTree = SimpleSegmentTree(n = 500000, identity = 0, combine = ::max)
+
+val maxSubArrayTree = SimpleSegmentTree(n = 500000, identity = Interval(0)) { l, r ->
+    Interval(
+        sum = l.sum + r.sum,
+        maxPrefixSum = max(l.maxPrefixSum, l.sum + r.maxPrefixSum),
+        maxSuffixSum = max(r.maxSuffixSum, l.maxSuffixSum + r.sum),
+        maxSubArraySum = maxOf(
+            l.maxSubArraySum,
+            r.maxSubArraySum,
+            l.maxSuffixSum + r.maxPrefixSum,
+        ),
+    )
+}
