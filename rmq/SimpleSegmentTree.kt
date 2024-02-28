@@ -50,3 +50,9 @@ val maxSubArrayTree = SimpleSegmentTree(n = 500000, identity = Interval(0)) { l,
         ),
     )
 }
+data class Interval(
+    val sum: Long = 0,
+    val maxPrefixSum: Long = sum,
+    val maxSuffixSum: Long = sum,
+    val maxSubArraySum: Long = sum,
+)
