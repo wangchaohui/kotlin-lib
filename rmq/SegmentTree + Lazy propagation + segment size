@@ -22,7 +22,20 @@ class SegmentTree<T, M>(
         values.forEachIndexed { i, v -> tree[i + n] = v }
         for (i in n - 1 downTo 1) {
             tree[i] = combine(tree[i * 2], tree[i * 2 + 1])
-            size[i] = size.getOrElse(i * 2) { 1 } * 2
+            val sizeLeft = size.getOrElse(i * 2) { 1 }
+            val sizeRight = size.getOrElse(i * 2 + 1) { 1 }
+            size[i] = if (sizeLeft == sizeRight) sizeLeft + sizeRight else 0
+        }
+    }
+
+    override fun toString(): String {
+        val l = MutableList(2 * n) { it - n }
+        for (i in n - 1 downTo 1) {
+            if (size[i] > 0) l[i] = l[i * 2]
+        }
+        return l.withIndex().filter { it.value >= 0 }.joinToString(System.lineSeparator()) { (i, l) ->
+            if (i >= n) "$l -> ${tree[i]}"
+            else "[$l,${l + size[i]}) -> ${tree[i]} ${lazy[i]}"
         }
     }
 
