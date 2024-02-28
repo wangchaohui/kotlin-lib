@@ -73,8 +73,8 @@ class SegmentTree<T, M>(
             i /= 2
             j /= 2
         }
-        build(l)
-        build(r - 1)
+        build(l + n)
+        build(r + n - 1)
     }
 
     fun update(index: Int, modification: M) {
