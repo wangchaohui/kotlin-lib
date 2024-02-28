@@ -1,57 +1,39 @@
-class SimpleSegmentTree(private val n: Int) {
-    data class Interval(
-        val sum: Long = 0,
-        val maxPrefixSum: Long = sum,
-        val maxSuffixSum: Long = sum,
-        val maxSubArraySum: Long = sum,
-    ) {
-        companion object {
-            fun combineNullable(l: Interval?, r: Interval?): Interval? = when {
-                l == null -> r
-                r == null -> l
-                else -> combine(l, r)
-            }
+class SimpleSegmentTree<T>(
+    private val n: Int,
+    private val identity: T,
+    private val combine: (T, T) -> T,
+) {
+    private val tree = MutableList(2 * n) { identity }
 
-            fun combine(l: Interval, r: Interval) = Interval(
-                sum = l.sum + r.sum,
-                maxPrefixSum = max(l.maxPrefixSum, l.sum + r.maxPrefixSum),
-                maxSuffixSum = max(r.maxSuffixSum, l.maxSuffixSum + r.sum),
-                maxSubArraySum = maxOf(
-                    l.maxSubArraySum,
-                    r.maxSubArraySum,
-                    l.maxSuffixSum + r.maxPrefixSum,
-                ),
-            )
-        }
+    constructor(values: List<T>, identity: T, combine: (T, T) -> T) :
+            this(values.size, identity, combine) {
+        values.forEachIndexed { i, v -> tree[i + n] = v }
+        for (i in n - 1 downTo 1) tree[i] = combine(tree[i * 2], tree[i * 2 + 1])
     }
 
-    private val t = Array(n * 2) { Interval() }
-
-    constructor(values: List<Long>) : this(values.size) {
-        values.forEachIndexed { i, v -> t[i + n] = Interval(v) }
-        for (i in n - 1 downTo 1) t[i] = Interval.combine(t[i * 2], t[i * 2 + 1])
-    }
-
-    fun query(l: Int, r: Int): Interval? {
-        var resL: Interval? = null
-        var resR: Interval? = null
+    /** Queries for the range `[l, r)`. */
+    fun query(l: Int, r: Int): T {
+        var resL = identity
+        var resR = identity
         var i = l + n
         var j = r + n
         while (i < j) {
-            if (i and 1 > 0) resL = Interval.combineNullable(resL, t[i++])
-            if (j and 1 > 0) resR = Interval.combineNullable(t[--j], resR)
+            if (i and 1 > 0) resL = combine(resL, tree[i++])
+            if (j and 1 > 0) resR = combine(tree[--j], resR)
             i /= 2
             j /= 2
         }
-        return Interval.combineNullable(resL, resR)
+        return combine(resL, resR)
     }
 
-    fun update(p: Int, delta: Int) {
+    fun update(p: Int, transform: (T) -> T) {
         var i = p + n
-        t[i] = Interval(t[i].sum + delta)
+        tree[i] = transform(tree[i])
         while (i > 1) {
             i /= 2
-            t[i] = Interval.combine(t[i * 2], t[i * 2 + 1])
+            tree[i] = combine(tree[i * 2], tree[i * 2 + 1])
         }
     }
 }
+
+val tree = SimpleSegmentTree(n = 500000, identity = 0, combine = ::max)
