@@ -90,3 +90,13 @@ class SegmentTree<T, M>(
         update(index, index + 1, modification)
     }
 }
+
+val segmentTree = SegmentTree<Long, Long>(
+    values = emptyList(),
+    identity = 0,
+    combine = { x, y -> x + y },
+    identityModification = 0,
+    combineModification = { x, y -> x + y },
+    modify = { sum, size -> sum + this * size },
+)
+
