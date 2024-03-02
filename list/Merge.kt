@@ -3,28 +3,28 @@ fun <T> merge(a: List<T>, b: List<T>, limit: Int, comparator: Comparator<T>, com
     var bIndex = 0
     val list = mutableListOf<T>()
     while (list.size < limit) {
-        val aMax = a.getOrNull(aIndex)
-        val bMax = b.getOrNull(bIndex)
-        if (aMax == null) {
-            if (bMax == null) break
-            list += bMax
+        val aItem = a.getOrNull(aIndex)
+        val bItem = b.getOrNull(bIndex)
+        if (aItem == null) {
+            if (bItem == null) break
+            list += bItem
             bIndex++
             continue
         }
-        if (bMax == null) {
-            list += aMax
+        if (bItem == null) {
+            list += aItem
             aIndex++
             continue
         }
-        val compare = comparator.compare(aMax, bMax)
+        val compare = comparator.compare(aItem, bItem)
         if (compare < 0) {
-            list += aMax
+            list += aItem
             aIndex++
         } else if (compare > 0) {
-            list += bMax
+            list += bItem
             bIndex++
         } else {
-            list += combine(aMax, bMax)
+            list += combine(aItem, bItem)
             aIndex++
             bIndex++
         }
