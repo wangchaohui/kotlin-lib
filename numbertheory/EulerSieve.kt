@@ -13,6 +13,20 @@ class EulerSieve(n: Int) {
             }
         }
     }
+
+    fun factorization(number: Int): List<Pair<Int, Int>> = buildList {
+        var x = number
+        for (prime in primes) {
+            if (prime > x) break
+            var y = 0
+            while (x % prime == 0) {
+                x /= prime
+                y++
+            }
+            if (y > 0) add(prime to y)
+        }
+        if (x > 1) add(x to 1)
+    }
 }
 
 // O(n) time & space
