@@ -6,6 +6,8 @@ value class ModInt private constructor(val value: Int) {
     operator fun minus(other: Int) = from(value - other)
     operator fun times(other: ModInt) = times(other.value)
     operator fun times(other: Int) = from(value.toLong() * other)
+    operator fun div(other: ModInt) = times(other.inv())
+    operator fun div(other: Int) = div(from(other))
 
     fun pow(exponent: Int): ModInt {
         var ans = One
@@ -20,6 +22,8 @@ value class ModInt private constructor(val value: Int) {
     }
 
     fun inv(): ModInt = pow(MOD - 2)
+
+    override fun toString() = value.toString()
 
     companion object {
         fun from(value: Int) = ModInt(value.mod())
@@ -49,15 +53,17 @@ class Matrix(
     operator fun times(other: Matrix): Matrix {
         check(m == other.n)
         val res = Matrix(n, other.m)
-        for (i in 0..<n) {
-            for (j in 0..<other.m) {
-                for (k in 0..<m) {
+        for (i in 0 until n) {
+            for (j in 0 until other.m) {
+                for (k in 0 until m) {
                     res.value[i][j] += value[i][k] * other.value[k][j]
                 }
             }
         }
         return res
     }
+
+    fun pow(exponent: Int) = pow(exponent.toLong())
 
     fun pow(exponent: Long): Matrix {
         check(n == m)
@@ -74,7 +80,7 @@ class Matrix(
 
     companion object {
         fun identity(n: Int) = Matrix(n, n).apply {
-            for (i in 0..<n) value[i][i] = ModInt.One
+            for (i in 0 until n) value[i][i] = ModInt.One
         }
     }
 }
