@@ -62,3 +62,36 @@ class Tree(val maxVertexId: Int) {
         return dfs(start)
     }
 }
+
+fun Tree.smallToLargeMerging(start: Int, has: BooleanArray): IntArray {
+    val ans = IntArray(maxVertexId + 1)
+
+    data class Answer(
+        val map: MutableIntMap<Int>,
+        var uniqueKeyCount: Int,
+    ) {
+        fun add(key: Int, value: Int) {
+            if (map[key] == 1) uniqueKeyCount--
+            map.increment(key, value)
+            if (map[key] == 1) uniqueKeyCount++
+        }
+
+        fun merge(other: Answer): Answer {
+            if (other.map.size > map.size) return other.merge(this)
+            for ((key, value) in other.map) add(key, value)
+            return this
+        }
+    }
+
+    dfsIterative(
+        start = start,
+        initial = { Answer(map = mutableIntMapOf(), uniqueKeyCount = 0) },
+        merge = Answer::merge,
+    ) {
+        ans[x] = it.uniqueKeyCount
+        if (has[x]) it.add(depth, 1)
+        it
+    }
+
+    return ans
+}

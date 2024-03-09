@@ -1,9 +1,12 @@
 class MutableIntMap<K> : LinkedHashMap<K, Int>() {
-    fun add(key: K, value: Int) {
-        this[key] = getOrElse(key) { 0 } + value
+    override operator fun get(key: K): Int = super.get(key) ?: 0
+
+    fun increment(key: K, value: Int = 1) {
+        this[key] = this[key] + value
     }
 
-    fun increment(key: K) {
-        add(key, 1)
+    companion object {
+        fun <K> mutableIntMapOf(vararg pairs: Pair<K, Int>) =
+            MutableIntMap<K>().apply { putAll(pairs) }
     }
 }
