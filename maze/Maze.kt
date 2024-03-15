@@ -26,9 +26,9 @@ class Maze(private val maze: List<String>) {
     fun Position.move(movement: Movement): Position? =
         Position(x + movement.deltaX, y + movement.deltaY).takeIf { it.isValid && it.c != BLOCKER }
 
-    fun Position.validMoves(): List<Position> = Movements.mapNotNull { move(it) }
+    fun Position.validMoves(movements: List<Movement> = Movements): List<Position> = movements.mapNotNull { move(it) }
 
-    private val positions = (0 until n * m).asSequence().map { it.toPosition() }
+    val positions = (0 until n * m).asSequence().map { it.toPosition() }
 
     fun find(c: Char): List<Position> = positions.filter { it.c == c }.toList()
 
@@ -40,7 +40,16 @@ class Maze(private val maze: List<String>) {
             Movement(0, -1),
         )
 
+        val Movements8 = Movements + listOf(
+            Movement(-1, -1),
+            Movement(-1, 1),
+            Movement(1, -1),
+            Movement(1, 1),
+        )
+
         const val BLOCKER = '#'
+
+        fun read(n: Int) = Maze(readStrings(n))
     }
 }
 
@@ -56,4 +65,24 @@ fun Maze.bfs(start: Maze.Position): IntArray {
         }
     }
     return distances
+}
+
+fun Maze.stronglyConnectedComponents(movements: List<Maze.Movement> = Maze.Movements): List<Int> {
+    val componentId = IntArray(n * m) { -1 }
+    val componentSizes = mutableListOf<Int>()
+    for (position in positions) if (componentId[position.id] == -1 && position.c != Maze.BLOCKER) {
+        componentId[position.id] = componentSizes.size
+        var componentSize = 1
+        val queue = ArrayDeque(listOf(position))
+        while (queue.isNotEmpty()) {
+            val u = queue.removeFirst()
+            for (v in u.validMoves(movements)) if (componentId[v.id] == -1) {
+                componentId[v.id] = componentId[u.id]
+                componentSize++
+                queue += v
+            }
+        }
+        componentSizes += componentSize
+    }
+    return componentSizes
 }
