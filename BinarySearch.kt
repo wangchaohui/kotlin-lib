@@ -29,3 +29,21 @@ fun upperBound(low: Int, high: Int, predicate: IntPredicate): Int? {
     }
     return l.takeIf(predicate::test)
 }
+
+/** The upper bound of [low, high], which `predicate.test(it)` is true. */
+fun upperBound(low: Double, high: Double, predicate: DoublePredicate): Double? {
+    if (low > high) return null
+    var l = low
+    var h = high
+    while (l + 1e-9 < h) {
+        val m = (l + h) / 2
+        if (l == m) break
+        if (predicate.test(m)) {
+            l = m
+        } else {
+            if (h == m) break
+            h = m
+        }
+    }
+    return l.takeIf(predicate::test)
+}
