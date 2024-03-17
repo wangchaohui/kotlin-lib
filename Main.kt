@@ -46,7 +46,8 @@ class MutableIntMap<K> : LinkedHashMap<K, Int>() {
 }
 
 typealias Pii = Pair<Int, Int>
-fun readPiis(n: Int) = List(n) { readInt() to readInt() }
+fun readPii() = readInt() to readInt()
+fun readPiis(n: Int) = List(n) { readPii() }
 
 infix fun Int.hasBit(i: Int): Boolean = this and (1 shl i) > 0
 infix fun Int.xorBit(i: Int): Int = this xor (1 shl i)
