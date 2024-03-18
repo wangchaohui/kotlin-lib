@@ -22,7 +22,7 @@ class StringHashAlgorithmImpl(
         while (bases.size <= s.length) bases += (bases.last().toLong() * base).mod(module)
         val hashes = IntArray(s.length + 1)
         for (i in s.indices) {
-            hashes[i + 1] = (hashes[i].toLong() * base + (s[i] - 'a')).mod(module)
+            hashes[i + 1] = (hashes[i].toLong() * base + (s[i] - 'a' + 1)).mod(module)
         }
         return StringHashImpl(hashes)
     }
