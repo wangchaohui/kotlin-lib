@@ -3,7 +3,7 @@ class EulerSieve(n: Int) {
     val primes = mutableListOf<Int>()
 
     init {
-        isPrime.set(2, n)
+        isPrime.set(2, n + 1)
         for (i in 2..n) {
             if (isPrime[i]) primes += i
             for (j in primes) {
