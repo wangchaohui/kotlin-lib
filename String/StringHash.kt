@@ -37,7 +37,7 @@ object CombinedStringHashAlgorithm : StringHashAlgorithm<List<Int>> {
     override fun hash(s: String) = StringHashImpl(HashAlgorithms.map { it.hash(s) })
 
     private val HashAlgorithms = listOf(
-        StringHashAlgorithmImpl(29, 1000000007),
+        StringHashAlgorithmImpl(Random.nextInt(29, 999999978), 1000000007),
         StringHashAlgorithmImpl(31, 998244353),
     )
 }
