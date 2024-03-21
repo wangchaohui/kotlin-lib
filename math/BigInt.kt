@@ -90,7 +90,7 @@ class BigInt(s: String) {
             } else {
                 i.padStart(GROUP_SIZE, '0')
             }
-        }
+        }.ifEmpty { "0" }
     }
 
     private companion object {
