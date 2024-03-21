@@ -30,7 +30,7 @@ class Manacher(private val string: String) {
 
     /** Find the longest palindrome in the original string */
     fun findLongestPalindrome(): String {
-        val centerIndex = (2 until processedString.length - 2).maxBy { lps[it] }
+        val centerIndex = (1 until processedString.length - 1).maxBy { lps[it] }
         return findLongestPalindrome(centerIndex)
     }
 
