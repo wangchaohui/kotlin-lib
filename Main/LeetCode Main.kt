@@ -45,14 +45,29 @@ fun readInt() = read().toInt()
 fun readDouble() = read().toDouble()
 fun readLong() = read().toLong()
 
-fun readIntArray(): IntArray {
+fun String.toIntArray(): IntArray = split(',').map(String::toInt).toIntArray()
+
+fun readArray(): String {
     val a = read()
     assert(a.startsWith('[') && a.endsWith(']'))
-    return a.removeSurrounding("[", "]").split(',').map(String::toInt).toIntArray()
+    return a.removeSurrounding("[", "]")
+}
+
+fun readIntArray(): IntArray = readArray().toIntArray()
+
+fun readArrayIntArray(): Array<IntArray> =
+    readArray()
+        .removeSurrounding("[", "]")
+        .split(Regex("""],\["""))
+        .map(String::toIntArray)
+        .toTypedArray()
+
+fun println(a: BooleanArray) {
+    println(a.joinToString(separator = ",", prefix = "[", postfix = "]"))
 }
 
 fun solve() {
-    println(Solution())
+    println(Solution().findAnswer(readInt(), readArrayIntArray()))
 }
 
 fun main() {
