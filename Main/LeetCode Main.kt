@@ -20,6 +20,8 @@ typealias Pii = Pair<Int, Int>
 
 infix fun Int.hasBit(i: Int): Boolean = this and (1 shl i) > 0
 infix fun Int.xorBit(i: Int): Int = this xor (1 shl i)
+infix fun Long.hasBit(i: Int): Boolean = this and (1L shl i) > 0
+infix fun Long.xorBit(i: Int): Long = this xor (1L shl i)
 
 const val INT_HALF_MAX_VALUE: Int = Int.MAX_VALUE / 2
 

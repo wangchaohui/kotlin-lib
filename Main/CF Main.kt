@@ -51,6 +51,8 @@ fun readPiis(n: Int) = List(n) { readPii() }
 
 infix fun Int.hasBit(i: Int): Boolean = this and (1 shl i) > 0
 infix fun Int.xorBit(i: Int): Int = this xor (1 shl i)
+infix fun Long.hasBit(i: Int): Boolean = this and (1L shl i) > 0
+infix fun Long.xorBit(i: Int): Long = this xor (1L shl i)
 
 fun largerStackSize(stackSizeMegaBytes: Int = 100, action: () -> Unit) {
     Thread(null, action, "", 1024L * 1024 * stackSizeMegaBytes).apply {
