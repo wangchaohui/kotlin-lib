@@ -1,4 +1,4 @@
-class EulerSieve(n: Int) {
+class EulerSieve(private val n: Int) {
     private val isPrime = BitSet(n + 1)
     val primes = mutableListOf<Int>()
 
@@ -26,6 +26,11 @@ class EulerSieve(n: Int) {
             if (y > 0) add(prime to y)
         }
         if (x > 1) add(x to 1)
+    }
+
+    fun isPrime(number: Int): Boolean = when {
+        number <= n -> isPrime[number]
+        else -> primes.all { number % it > 0 }
     }
 }
 
