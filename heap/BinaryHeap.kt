@@ -24,6 +24,15 @@ class BinaryHeap<T : BinaryHeap.Item>(private val comparator: Comparator<T>) {
         return top?.apply { pos = -1 }
     }
 
+    fun del(item: T) {
+        val p = item.pos
+        val last = a.removeLast()
+        if (a.isNotEmpty() && last.pos != p) {
+            a[p] = last.apply { pos = p }
+            heapify(popUp(p))
+        }
+    }
+
     fun modify(item: T) {
         if (item.pos in a.indices) heapify(popUp(item.pos))
     }
