@@ -26,6 +26,8 @@ class SimpleSegmentTree<T>(
         return combine(resL, resR)
     }
 
+    operator fun get(i: Int) = query(i, i + 1)
+
     fun update(p: Int, transform: (T) -> T) {
         var i = p + n
         tree[i] = transform(tree[i])
