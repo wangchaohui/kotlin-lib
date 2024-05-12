@@ -47,26 +47,24 @@ fun readInt() = read().toInt()
 fun readDouble() = read().toDouble()
 fun readLong() = read().toLong()
 
+fun String.checkRemoveSurrounding(prefix: CharSequence, suffix: CharSequence = prefix): String {
+    assert(startsWith(prefix) && endsWith(prefix))
+    return removeSurrounding(prefix, suffix)
+}
+
+fun readString(): String = read().checkRemoveSurrounding("\"")
+fun readArray(): String = read().checkRemoveSurrounding("[", "]")
+
 fun String.toIntArray(): IntArray = split(',').map(String::toInt).toIntArray()
-
-fun readArray(): String {
-    val a = read()
-    assert(a.startsWith('[') && a.endsWith(']'))
-    return a.removeSurrounding("[", "]")
-}
-
 fun readIntArray(): IntArray = readArray().toIntArray()
+fun readArrayIntArray(): Array<IntArray> = readArray()
+    .checkRemoveSurrounding("[", "]")
+    .split(Regex("""],\["""))
+    .map(String::toIntArray)
+    .toTypedArray()
 
-fun readArrayIntArray(): Array<IntArray> =
-    readArray()
-        .removeSurrounding("[", "]")
-        .split(Regex("""],\["""))
-        .map(String::toIntArray)
-        .toTypedArray()
-
-fun println(a: BooleanArray) {
-    println(a.joinToString(separator = ",", prefix = "[", postfix = "]"))
-}
+fun println(a: IntArray) = println(a.contentToString())
+fun println(a: BooleanArray) = println(a.contentToString())
 
 fun solve() {
     println(Solution().findAnswer(readInt(), readArrayIntArray()))
