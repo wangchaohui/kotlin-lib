@@ -37,7 +37,9 @@ value class ModInt private constructor(val value: Int) {
         fun Long.mod() = mod(MOD)
         val Zero = from(0)
         val One = from(1)
+
         const val MOD = 998244353
+        const val MOD = 1000000007
     }
 }
 
