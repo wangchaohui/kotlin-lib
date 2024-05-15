@@ -67,6 +67,21 @@ fun Maze.bfs(start: Maze.Position): IntArray {
     return distances
 }
 
+fun Maze.dijkstra(start: Maze.Position, color: Char): IntArray {
+    val distances = IntArray(n * m) { -1 }
+    val q = PriorityQueue<Pair<Maze.Position, Int>>(compareBy { it.second })
+    q += start to 0
+    while (q.isNotEmpty()) {
+        val (u, distanceU) = q.poll()
+        if (distances[u.id] != -1) continue
+        distances[u.id] = distanceU
+        for (v in u.validMoves()) {
+            q += v to distances[u.id] + if (v.c != color) 1 else 0
+        }
+    }
+    return distances
+}
+
 fun Maze.stronglyConnectedComponents(movements: List<Maze.Movement> = Maze.Movements): List<Int> {
     val componentId = IntArray(n * m) { -1 }
     val componentSizes = mutableListOf<Int>()
