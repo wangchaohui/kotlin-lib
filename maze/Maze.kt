@@ -5,7 +5,9 @@ class Maze(private val maze: List<String>) {
     data class Position(
         val x: Int,
         val y: Int,
-    )
+    ) {
+        operator fun plus(movement: Movement) = Position(x + movement.deltaX, y + movement.deltaY)
+    }
 
     data class Movement(
         val deltaX: Int,
@@ -23,14 +25,18 @@ class Maze(private val maze: List<String>) {
     val Position.isValid: Boolean
         get() = x in 0 until n && y in 0 until m
 
-    fun Position.move(movement: Movement): Position? =
-        Position(x + movement.deltaX, y + movement.deltaY).takeIf { it.isValid && it.c != BLOCKER }
+    fun Position.move(movement: Movement): Position? = (this + movement).takeIf { it.isValid && it.c != BLOCKER }
 
     fun Position.validMoves(movements: List<Movement> = Movements): List<Position> = movements.mapNotNull { move(it) }
 
-    val positions = (0 until n * m).asSequence().map { it.toPosition() }
+    val positions = (0 until n * m).map { it.toPosition() }
 
-    fun find(c: Char): List<Position> = positions.filter { it.c == c }.toList()
+    fun find(c: Char): List<Position> = positions.filter { it.c == c }
+
+    operator fun IntArray.get(position: Position) = this[position.id]
+    operator fun IntArray.set(position: Position, value: Int) {
+        this[position.id] = value
+    }
 
     companion object {
         val Movements = listOf(
@@ -55,12 +61,12 @@ class Maze(private val maze: List<String>) {
 
 fun Maze.bfs(start: Maze.Position): IntArray {
     val distances = IntArray(n * m) { -1 }
-    distances[start.id] = 0
+    distances[start] = 0
     val queue = ArrayDeque(listOf(start))
     while (queue.isNotEmpty()) {
         val u = queue.removeFirst()
-        for (v in u.validMoves()) if (distances[v.id] == -1) {
-            distances[v.id] = distances[u.id] + 1
+        for (v in u.validMoves()) if (distances[v] == -1) {
+            distances[v] = distances[u] + 1
             queue += v
         }
     }
@@ -73,10 +79,10 @@ fun Maze.dijkstra(start: Maze.Position, color: Char): IntArray {
     q += start to 0
     while (q.isNotEmpty()) {
         val (u, distanceU) = q.poll()
-        if (distances[u.id] != -1) continue
-        distances[u.id] = distanceU
+        if (distances[u] != -1) continue
+        distances[u] = distanceU
         for (v in u.validMoves()) {
-            q += v to distances[u.id] + if (v.c != color) 1 else 0
+            q += v to distances[u] + if (v.c != color) 1 else 0
         }
     }
     return distances
@@ -85,14 +91,14 @@ fun Maze.dijkstra(start: Maze.Position, color: Char): IntArray {
 fun Maze.stronglyConnectedComponents(movements: List<Maze.Movement> = Maze.Movements): List<Int> {
     val componentId = IntArray(n * m) { -1 }
     val componentSizes = mutableListOf<Int>()
-    for (position in positions) if (componentId[position.id] == -1 && position.c != Maze.BLOCKER) {
-        componentId[position.id] = componentSizes.size
+    for (position in positions) if (componentId[position] == -1 && position.c != Maze.BLOCKER) {
+        componentId[position] = componentSizes.size
         var componentSize = 1
         val queue = ArrayDeque(listOf(position))
         while (queue.isNotEmpty()) {
             val u = queue.removeFirst()
-            for (v in u.validMoves(movements)) if (componentId[v.id] == -1) {
-                componentId[v.id] = componentId[u.id]
+            for (v in u.validMoves(movements)) if (componentId[v] == -1) {
+                componentId[v] = componentId[u]
                 componentSize++
                 queue += v
             }
