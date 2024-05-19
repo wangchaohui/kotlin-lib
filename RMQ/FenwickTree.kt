@@ -1,11 +1,11 @@
-class FenwickTree(n: Int) {
-    private val tree = LongArray(n)
-
-    constructor(values: List<Long>) : this(values.size) {
-        values.forEachIndexed { index, value ->
+class FenwickTree(private val tree: LongArray) {
+    init {
+        tree.forEachIndexed { index, value ->
             parent(index)?.let { tree[it] += value }
         }
     }
+
+    constructor(n: Int) : this(LongArray(n))
 
     /** Gets the sum of `[0, index]`. */
     fun prefixSum(index: Int): Long {
