@@ -2,12 +2,16 @@
 value class ModInt private constructor(val value: Int) {
     operator fun plus(other: ModInt) = plus(other.value)
     operator fun plus(other: Int) = from(value + other)
+    operator fun plus(other: Long) = from(value + other)
     operator fun minus(other: ModInt) = minus(other.value)
     operator fun minus(other: Int) = from(value - other)
+    operator fun minus(other: Long) = from(value - other)
     operator fun times(other: ModInt) = times(other.value)
-    operator fun times(other: Int) = from(value.toLong() * other)
+    operator fun times(other: Int) = times(other.toLong())
+    operator fun times(other: Long) = from(value * other)
     operator fun div(other: ModInt) = times(other.inv())
     operator fun div(other: Int) = div(from(other))
+    operator fun div(other: Long) = div(from(other))
 
     fun pow(exponent: Int): ModInt {
         var ans = One
