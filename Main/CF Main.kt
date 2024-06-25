@@ -62,6 +62,8 @@ fun largerStackSize(stackSizeMegaBytes: Int = 100, action: () -> Unit) {
     }
 }
 
+fun <K, V> MutableMap<K, V>.memory(key: K, block: () -> V) = get(key) ?: block().also { put(key, it) }
+
 // #################################################################################################
 
 fun solve() {
